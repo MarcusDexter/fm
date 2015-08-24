@@ -143,6 +143,26 @@
   
   <script>
     var path;
+    
+    function openFolder(dirname){
+        path=path+'/'+dirname;
+      $.ajax({ 
+        type: "GET",  
+        url: "http://localhost/fm/server.php",
+        dataType: "json",
+        data:{
+            "path":path,
+          },
+        success: function(data) {
+          drawTable(data.tableInfo.folderInfo, data.tableInfo.fileInfo);
+          drawPath(data.path);
+        },
+        error: function(jqXHR){     
+          alert("发生错误：" + jqXHR.status); 
+        },     
+      });
+    }
+    
     function show(dis){
       document.getElementById(dis).style.display="block";
     }
@@ -208,7 +228,7 @@
     }
 
     function drawFolderTable(no ,name, size, riqi){
-      $("#tab").append('<tr><td class="hidden-xs">'+no+'</td><td><img src="images/folder_ico.png" alt=""  title="文件"/></td><td id="td'+no+'"><a href="#" id="">'+name+'</a></td><td id="">'+size+'</td><td id="" class="hidden-xs">'+riqi+'</td><td><a href="#" class="btn btn-success btn-sm" onclick="rename(\'#td'+no+'\',\''+name+'\')">重命名</a> <a href="#" class="btn btn-info btn-sm">复制</a> <a href="#" class="btn btn-warning btn-sm">剪切</a> <a href="#"  onclick="delFolder(\''+name+'\')" class="btn btn-danger btn-sm">删除</a></td></tr>');
+      $("#tab").append('<tr><td class="hidden-xs">'+no+'</td><td><img src="images/folder_ico.png" alt=""  title="文件"/></td><td id="td'+no+'"><a href="#" id="" onclick="openFolder('+name+')">'+name+'</a></td><td id="">'+size+'</td><td id="" class="hidden-xs">'+riqi+'</td><td><a href="#" class="btn btn-success btn-sm" onclick="rename(\'#td'+no+'\',\''+name+'\')">重命名</a> <a href="#" class="btn btn-info btn-sm">复制</a> <a href="#" class="btn btn-warning btn-sm">剪切</a> <a href="#"  onclick="delFolder(\''+name+'\')" class="btn btn-danger btn-sm">删除</a></td></tr>');
     }
 
     function drawTable(folderInfo, fileInfo){
