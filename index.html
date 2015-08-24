@@ -143,9 +143,8 @@
   
   <script>
     var path;
-    
-    function openFolder(dirname){
-        path=path+'/'+dirname;
+    function openRealFolder(address){
+      path=address;
       $.ajax({ 
         type: "GET",  
         url: "http://localhost/fm/server.php",
@@ -161,6 +160,10 @@
           alert("发生错误：" + jqXHR.status); 
         },     
       });
+    }
+    
+    function openFolder(dirname){
+      openRealFolder(path+'/'+dirname);
     }
     
     function show(dis){
@@ -212,7 +215,15 @@
     }
     
     function drawPath(path){
-        $("#path").html('<li><a href="index.html">'+path+'</a></li> ');
+      $("#path").empty();
+      var paths=path.split("/");
+      var countPath="";
+      for(var i=0;i<paths.length-1;i++){
+        countPath+=paths[i];
+        $("#path").append('<li><a href="#" onclick="openRealFolder(\''+countPath+'\')">'+paths[i]+'</a></li> ');
+        countPath+='/';
+      }
+      $("#path").append('<li class="active">'+paths[i]+'</li> ');
     }
 
     function unRename(id,name){
