@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+  <title>WEB资源管理器 Beta</title>
+
+  <!-- Bootstrap -->
+  <!--link href="css/bootstrap.min.css" rel="stylesheet"-->
+  <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.min.css">
+
+  <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+<script src="http://apps.bdimg.com/libs/html5shiv/r29/html5.min.js"></script>
+<script src="http://apps.bdimg.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.js"></script>
+<link rel="stylesheet" href="http://apps.bdimg.com/libs/jqueryui/1.10.4/css/jquery-ui.css"  type="text/css"/>
+
+
+<script type="text/javascript">
+  function show(dis){
+    document.getElementById(dis).style.display="block";
+  }
+  function unshow(dis){
+    document.getElementById(dis).style.display="none";
+  }
+  function delFile(filename,path){
+    if(window.confirm("您确定要删除嘛?删除之后无法恢复哟!!!")){
+      location.href="index.php?act=delFile&filename="+filename+"&path="+path;
+    }
+  }
+  function delFolder(dirname){
+    if(window.confirm("您确定要删除嘛?删除之后无法恢复哟!!!")){
+      $.ajax({ 
+        type: "POST",  
+        url: "http://localhost/fm/server.php",
+        data:{
+          "act":"delFolder",
+          "path":"file/".dirname
+        },
+        success: function(data) {
+          drawTable(data);
+        },
+        error: function(jqXHR){     
+          alert("发生错误：" + jqXHR.status); 
+        },     
+      });
+    }
+  }
+</script>
+</head>
+<body>
+  <div id="showDetail"  style="display:none"><img src="" id="showImg" alt=""/></div>
+  <!-- 地址栏 -->
+  <ol class="breadcrumb" id="path">
+    <li><a href="index.html">file</a></li>
+    <li class="active">1</li>
+  </ol>
+
+  
+
+  <!-- 表格显示文件信息 -->
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span12">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <!-- 功能按钮 -->
+            <div class="btn-toolbar" role="toolbar" aria-label="...">
+              <!-- 上传，新建按钮 -->
+              <div class="btn-group" role="group" aria-label="...">
+                <button type="button" class="btn btn-default" onclick="show('uploadFile')">上传</button>
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  新建 <span class="careat"></span>
+                </button>
+                <ul class="dropdown-menu">
+                  <li><a href="#" onclick="show('createFile')" title="新建文件">新建文件</a></li>
+                  <li><a href="#" onclick="show('createFolder')" title="新建文件夹">新建文件夹</a></li>
+                </ul>
+              </div>
+
+              <!-- 上传文件 -->
+              <div class="btn-group" id="uploadFile" style="display: none" role="group" aria-label="...">
+                <form class="form-inline" action="index.php" method="post" enctype="multipart/form-data">
+                  <div class="form-group">
+                    <div class="input-group">
+                      <input type="file" name="myFile" />
+                    </div>
+                  </div>
+                  <button type="submit" class="btn btn-primary" name="act" value="上传文件">确定</button>
+                  <a href="#" class="btn btn-default" onclick="unshow('uploadFile')">取消</a>
+                </form>
+              </div>
+
+              <!-- 新建文件 -->
+              <div class="btn-group" id="createFile" style="display: none" role="group" aria-label="...">
+                <form class="form-inline">
+                  <div class="form-group">
+                    <label class="sr-only" for="exampleInputAmount">Amount (in dollars)</label>
+                    <div class="input-group">
+                      <div class="input-group-addon">文件名</div>
+                      <input type="text" class="form-control" placeholder="文件名" name="filename">
+                    </div>
+                  </div>
+                  <input type="hidden" name="path" value="file/1"/>
+                  <button type="submit" class="btn btn-primary" name="act" value="创建文件">确定</button>
+                  <a href="#" class="btn btn-default" onclick="unshow('createFile')">取消</a>
+                </form>
+              </div>
+
+              <!-- 新建文件夹 -->
+              <div class="btn-group" id="createFolder" style="display: none" role="group" aria-label="...">
+                <form class="form-inline">
+                  <div class="form-group">
+                    <div class="input-group">
+                      <div class="input-group-addon">文件夹名</div>
+                      <input type="text" class="form-control" placeholder="文件夹名" name="dirname">
+                    </div>
+                  </div>
+                  <input type="hidden" name="path" value="file/1"/>
+                  <button type="submit" class="btn btn-primary" name="act" value="创建文件夹">确定</button>
+                  <a href="#" class="btn btn-default" onclick="unshow('createFolder')">取消</a>
+                </form>
+              </div>
+            </div>
+          </div>
+          
+          <table class="table table-responsive table-bordered table-striped table-hover table-condensed">
+            <thead>
+              <tr>
+                <th width="44 px" class="hidden-xs">编号</th>
+                <th width="44 px">类型</th>
+                <th>名称</th>
+                <th width="44 px">大小</th>
+                <th width="150 px" class="hidden-xs">日期</th>
+                <th width="270 px">操作</th>
+              </tr>
+            </thead>
+            <tbody id="tab">
+              
+            </tbody>
+          </table>
+          
+          <div class="panel-footer">
+            <nav>
+              <ul class="pagination" style="margin: 0">
+                <li>
+                  <a href="#" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                  </a>
+                </li>
+                <li><a href="#">1</a></li>
+                <li><a href="#">2</a></li>
+                <li><a href="#">3</a></li>
+                <li><a href="#">4</a></li>
+                <li><a href="#">5</a></li>
+                <li>
+                  <a href="#" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                  </a>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    function drawpaths(path){
+      $("#path").html('<li><a href="index.html">file</a></li> ');
+      if (path.length>2) {
+        for (var i = 1; i < path.length - 1; i++) {
+         $("#path").append('<li><a href="index.html">'+path[i]+'</a></li>');
+        };
+        $("#path").append('<li class="active"><a href="index.html">'+path[i]+'</a></li>');
+      };
+    }
+
+    function unRename(id,name){
+      $(id).html('<a href="#" id="">'+name+'</a>');
+    }
+
+    function rename(id,name){
+      $(id).html('<form action="index.php?act=doRenameFolder" method="post"> <input type="text" name="newname" placeholder="'+name+'"/> <input type="hidden" name="path" value="" /> <input type="hidden" name="dirname" value="" /> <input type="submit" value="重命名" class="btn btn-danger btn-sm"/> <a href="#" onclick="unRename(\''+id+'\',\''+name+'\')" class="btn btn-default btn-sm">取消</a> </form>');
+
+    }
+
+    function drawFileTable(no, name, size, riqi){
+      $("#tab").append('<tr><td class="hidden-xs">'+no+'</td><td><img src="images/file_ico.png" alt=""  title="文件夹"/></td><td id="td'+no+'"><a href="#" id="">'+name+'</a></td><td id="">'+size+'</td><td id="" class="hidden-xs">'+riqi+'</td><td><a href="#" class="btn btn-success btn-sm" onclick="rename(\'#td'+no+'\',\''+name+'\')">重命名</a> <a href="#" class="btn btn-info btn-sm">复制</a> <a href="#" class="btn btn-warning btn-sm">剪切</a> <a href="#"  onclick="delFolder()" class="btn btn-danger btn-sm">删除</a> <a href="#" class="btn btn-primary btn-sm">下载</a></td></tr>');
+    }
+
+    function drawFolderTable(no ,name, size, riqi){
+      $("#tab").append('<tr><td class="hidden-xs">'+no+'</td><td><img src="images/folder_ico.png" alt=""  title="文件"/></td><td id="td'+no+'"><a href="#" id="">'+name+'</a></td><td id="">'+size+'</td><td id="" class="hidden-xs">'+riqi+'</td><td><a href="#" class="btn btn-success btn-sm" onclick="rename(\'#td'+no+'\',\''+name+'\')">重命名</a> <a href="#" class="btn btn-info btn-sm">复制</a> <a href="#" class="btn btn-warning btn-sm">剪切</a> <a href="#"  onclick="delFolder('+name+')" class="btn btn-danger btn-sm">删除</a></td></tr>');
+    }
+
+    function drawTable(folderInfo, fileInfo){
+      var no = 1;
+      for (var i = 0; i < folderInfo.length; i += 3) {
+        drawFolderTable(no, folderInfo[i], folderInfo[i + 1], folderInfo[i + 2]);
+        no++;
+      };
+        
+
+      for (var i = 0; i < folderInfo.length; i += 3) {
+        drawFileTable(no, fileInfo[i], fileInfo[i + 1], fileInfo[i + 2]);
+        no++;
+      }
+    }
+
+    $(document).ready(function (){
+      $.ajax({ 
+        type: "GET",  
+        url: "http://localhost/fm/server.php",
+        dataType: "json",
+        //jsonp: "callback",
+        success: function(data) {
+          drawTable(data.tableInfo.folderInfo, data.tableInfo.fileInfo);
+          drawpaths(data.path);
+        },
+        error: function(jqXHR){     
+          alert("发生错误：" + jqXHR.status); 
+        },     
+      });
+    })
+  </script>
+  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+  <!-- script src="http://cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script-->
+
+  <!-- Include all compiled plugins (below), or include individual files as needed -->
+  <script src="http://apps.bdimg.com/libs/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+</body>
+</html>
