@@ -151,9 +151,23 @@
       document.getElementById(dis).style.display="none";
     }
     
-    function delFile(filename,path){
+    function delFile(filename){
       if(window.confirm("您确定要删除嘛?删除之后无法恢复哟!!!")){
-        location.href="index.php?act=delFile&filename="+filename+"&path="+path;
+        $.ajax({ 
+          type: "POST",  
+          url: "http://localhost/fm/server.php",
+          data:{
+            "act":"delFile",
+            "path":path,
+            "filename":filename,
+          },
+          success: function(data) {
+            drawTable(data.tableInfo.folderInfo, data.tableInfo.fileInfo);
+          },
+          error: function(jqXHR){     
+            alert("发生错误：" + jqXHR.status); 
+          },     
+        });
       }
     }
     
@@ -190,7 +204,7 @@
     }
 
     function drawFileTable(no, name, size, riqi){
-      $("#tab").append('<tr><td class="hidden-xs">'+no+'</td><td><img src="images/file_ico.png" alt=""  title="文件夹"/></td><td id="td'+no+'"><a href="" id="">'+name+'</a></td><td id="">'+size+'</td><td id="" class="hidden-xs">'+riqi+'</td><td><a href="#" class="btn btn-success btn-sm" onclick="rename(\'#td'+no+'\',\''+name+'\')">重命名</a> <a href="#" class="btn btn-info btn-sm">复制</a> <a href="#" class="btn btn-warning btn-sm">剪切</a> <a href="#"  onclick="delFolder()" class="btn btn-danger btn-sm">删除</a> <a href="#" class="btn btn-primary btn-sm">下载</a></td></tr>');
+      $("#tab").append('<tr><td class="hidden-xs">'+no+'</td><td><img src="images/file_ico.png" alt=""  title="文件夹"/></td><td id="td'+no+'"><a href="" id="">'+name+'</a></td><td id="">'+size+'</td><td id="" class="hidden-xs">'+riqi+'</td><td><a href="#" class="btn btn-success btn-sm" onclick="rename(\'#td'+no+'\',\''+name+'\')">重命名</a> <a href="#" class="btn btn-info btn-sm">复制</a> <a href="#" class="btn btn-warning btn-sm">剪切</a> <a href="#"  onclick="delFile(\''+name+'\')" class="btn btn-danger btn-sm">删除</a> <a href="#" class="btn btn-primary btn-sm">下载</a></td></tr>');
     }
 
     function drawFolderTable(no ,name, size, riqi){

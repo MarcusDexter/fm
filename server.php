@@ -14,6 +14,8 @@ $dirname=$_REQUEST['dirname'];
 $msg;
 if ($act=="delFolder") {
 	$msg = delFolder($path.'/'.$dirname);
+}elseif ($act=="delFile") {
+	$msg = delFile($path.'/'.$filename);
 }
 $info=readDirectory($path);
 
