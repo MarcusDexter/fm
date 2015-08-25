@@ -52,13 +52,15 @@
 
               <!-- 上传文件 -->
               <div class="btn-group" id="uploadFile" style="display: none" role="group" aria-label="...">
-                <form class="form-inline" action="index.php" method="post" enctype="multipart/form-data">
+                <form class="form-inline" action="server.php" method="post" enctype="multipart/form-data">
                   <div class="form-group">
                     <div class="input-group">
-                      <input type="file" name="myFile" />
+                      <input type="file" name="myFile" multiple="multiple" />
                     </div>
                   </div>
-                  <button type="submit" class="btn btn-primary" name="act" value="上传文件">确定</button>
+                  <a href="#" class="btn btn-default" onclick="upload()">test</a>
+                  <a href="#" class="btn btn-primary" onclick="uploadFiles()">确定</a>
+                  <input type="submit" class="btn btn-primary" name="act" value="上传" />
                   <a href="#" class="btn btn-default" onclick="unshow('uploadFile')">取消</a>
                 </form>
               </div>
@@ -70,11 +72,10 @@
                     <label class="sr-only" for="exampleInputAmount">Amount (in dollars)</label>
                     <div class="input-group">
                       <div class="input-group-addon">文件名</div>
-                      <input type="text" class="form-control" placeholder="文件名" name="filename">
+                      <input id="newFileName" type="text" class="form-control" placeholder="文件名" name="filename">
                     </div>
                   </div>
-                  <input type="hidden" name="path" value="file/1"/>
-                  <button type="submit" class="btn btn-primary" name="act" value="创建文件">确定</button>
+                  <a href="#" class="btn btn-primary" onclick="createFile()">确定</a>
                   <a href="#" class="btn btn-default" onclick="unshow('createFile')">取消</a>
                 </form>
               </div>
@@ -85,11 +86,10 @@
                   <div class="form-group">
                     <div class="input-group">
                       <div class="input-group-addon">文件夹名</div>
-                      <input type="text" class="form-control" placeholder="文件夹名" name="dirname">
+                      <input id="newFolderName" type="text" class="form-control" placeholder="文件夹名" name="dirname">
                     </div>
                   </div>
-                  <input type="hidden" name="path" value="file/1"/>
-                  <button type="submit" class="btn btn-primary" name="act" value="创建文件夹">确定</button>
+                  <a href="#" class="btn btn-primary" onclick="createFolder()">确定</a>
                   <a href="#" class="btn btn-default" onclick="unshow('createFolder')">取消</a>
                 </form>
               </div>
@@ -143,6 +143,44 @@
   
   <script>
     var path;
+    
+    function createFile(){
+      $.ajax({ 
+          type: "POST",  
+          url: "http://localhost/fm/server.php",
+          data:{
+            "act":"createFile",
+            "path":path,
+            "filename":$("#newFileName").val(),
+          },
+          success: function(data) {
+            drawTable(data.tableInfo.folderInfo, data.tableInfo.fileInfo);
+            unshow('createFile');
+          },
+          error: function(jqXHR){     
+            alert("发生错误：" + jqXHR.status); 
+          },     
+        });
+    }
+    
+    function createFolder(){
+      $.ajax({ 
+          type: "POST",  
+          url: "http://localhost/fm/server.php",
+          data:{
+            "act":"createFolder",
+            "path":path,
+            "dirname":$("#newFolderName").val(),
+          },
+          success: function(data) {
+            drawTable(data.tableInfo.folderInfo, data.tableInfo.fileInfo);
+            unshow('createFolder');
+          },
+          error: function(jqXHR){     
+            alert("发生错误：" + jqXHR.status); 
+          },     
+        });
+    }
     
     function renameFile(oldname,id){
       $.ajax({ 

@@ -4,6 +4,7 @@ header("Content-Type: application/json;charset=utf-8");
 require_once 'dir.func.php';
 require_once 'file.func.php';
 require_once 'common.func.php';
+require_once 'upload.class.php';
 
 $path="file";
 $path=$_REQUEST['path']?$_REQUEST['path']:$path;
@@ -21,6 +22,10 @@ if ($act=="delFolder") {
 	$msg = renameFolder($path.'/'.$dirname,$path.'/'.$_REQUEST['newname']);
 }elseif($act=="renameFile"){
 	$msg = renameFile($path.'/'.$filename,$_REQUEST['newname']);
+}elseif($act=="createFolder"){
+	$msg = createFolder($path.'/'.$dirname);
+}elseif($act=="createFile"){
+	$msg = createFile($path.'/'.$filename);
 }
 
 $info=readDirectory($path);
