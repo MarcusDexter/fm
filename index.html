@@ -143,6 +143,45 @@
   
   <script>
     var path;
+    
+    function renameFile(oldname,id){
+      $.ajax({ 
+          type: "POST",  
+          url: "http://localhost/fm/server.php",
+          data:{
+            "act":"renameFile",
+            "path":path,
+            "filename":oldname,
+            "newname":$("#newname"+id).val(),
+          },
+          success: function(data) {
+            drawTable(data.tableInfo.folderInfo, data.tableInfo.fileInfo);
+          },
+          error: function(jqXHR){     
+            alert("发生错误：" + jqXHR.status); 
+          },     
+        });
+    }
+    
+    function renameFolder(oldname,id){
+      $.ajax({ 
+          type: "POST",  
+          url: "http://localhost/fm/server.php",
+          data:{
+            "act":"renameFolder",
+            "path":path,
+            "dirname":oldname,
+            "newname":$("#newname"+id).val(),
+          },
+          success: function(data) {
+            drawTable(data.tableInfo.folderInfo, data.tableInfo.fileInfo);
+          },
+          error: function(jqXHR){     
+            alert("发生错误：" + jqXHR.status); 
+          },     
+        });
+    }
+    
     function openRealFolder(address){
       path=address;
       $.ajax({ 
@@ -226,20 +265,24 @@
       $("#path").append('<li class="active">'+paths[i]+'</li> ');
     }
 
-    function unRename(id,name){
-      $(id).html('<a href="#" id="">'+name+'</a>');
-    }
-
-    function rename(id,name){
-      $(id).html('<form action="index.php?act=doRenameFolder" method="post"> <input type="text" name="newname" placeholder="'+name+'"/> <input type="hidden" name="path" value="" /> <input type="hidden" name="dirname" value="" /> <input type="submit" value="重命名" class="btn btn-danger btn-sm"/> <a href="#" onclick="unRename(\''+id+'\',\''+name+'\')" class="btn btn-default btn-sm">取消</a> </form>');
+    function showRename(id){
+      var nameid="#name"+id;
+      var renameid="#rename"+id;
+      if($(renameid).css("display")=="block"){
+        $(renameid).css("display","none");
+        $(nameid).css("display","block");
+      }else{
+        $(nameid).css("display","none");
+        $(renameid).css("display","block");
+      }
     }
 
     function drawFileTable(no, name, size, riqi){
-      $("#tab").append('<tr><td class="hidden-xs">'+no+'</td><td><img src="images/file_ico.png" alt=""  title="文件夹"/></td><td id="td'+no+'"><a href="" id="">'+name+'</a></td><td id="">'+size+'</td><td id="" class="hidden-xs">'+riqi+'</td><td><a href="#" class="btn btn-success btn-sm" onclick="rename(\'#td'+no+'\',\''+name+'\')">重命名</a> <a href="#" class="btn btn-info btn-sm">复制</a> <a href="#" class="btn btn-warning btn-sm">剪切</a> <a href="#"  onclick="delFile(\''+name+'\')" class="btn btn-danger btn-sm">删除</a> <a href="#" class="btn btn-primary btn-sm">下载</a></td></tr>');
+      $("#tab").append('<tr><td class="hidden-xs">'+no+'</td><td><img src="images/file_ico.png" alt=""  title="文件夹"/></td><td id="td'+no+'"><a href="#" id="name'+no+'">'+name+'</a><form style="display:none" id="rename'+no+'"> <input type="text" name="newname" id="newname'+no+'" placeholder="'+name+'"/> <a href="#" onclick="renameFile(\''+name+'\',\''+no+'\')" class="btn btn-default btn-sm">确定</a> <a href="#" onclick="showRename('+no+')" class="btn btn-default btn-sm">取消</a> </form></td><td id="">'+size+'</td><td id="" class="hidden-xs">'+riqi+'</td><td><a href="#" class="btn btn-success btn-sm" onclick="showRename('+no+')">重命名</a> <a href="#" class="btn btn-info btn-sm">复制</a> <a href="#" class="btn btn-warning btn-sm">剪切</a> <a href="#"  onclick="delFile(\''+name+'\')" class="btn btn-danger btn-sm">删除</a> <a href="#" class="btn btn-primary btn-sm">下载</a></td></tr>');
     }
 
     function drawFolderTable(no ,name, size, riqi){
-      $("#tab").append('<tr><td class="hidden-xs">'+no+'</td><td><img src="images/folder_ico.png" alt=""  title="文件"/></td><td id="td'+no+'"><a href="#" id="" onclick="openFolder('+name+')">'+name+'</a></td><td id="">'+size+'</td><td id="" class="hidden-xs">'+riqi+'</td><td><a href="#" class="btn btn-success btn-sm" onclick="rename(\'#td'+no+'\',\''+name+'\')">重命名</a> <a href="#" class="btn btn-info btn-sm">复制</a> <a href="#" class="btn btn-warning btn-sm">剪切</a> <a href="#"  onclick="delFolder(\''+name+'\')" class="btn btn-danger btn-sm">删除</a></td></tr>');
+      $("#tab").append('<tr><td class="hidden-xs">'+no+'</td><td><img src="images/folder_ico.png" alt=""  title="文件" onclick="openFolder('+name+')"/></td><td id="td'+no+'"><a href="#" id="name'+no+'" onclick="openFolder('+name+')">'+name+'</a><form style="display:none" id="rename'+no+'"> <input type="text" id="newname'+no+'" placeholder="'+name+'"/> <a href="#" onclick="renameFolder(\''+name+'\',\''+no+'\')" class="btn btn-default btn-sm">确定</a> <a href="#" onclick="showRename('+no+')" class="btn btn-default btn-sm">取消</a> </form></td><td id="">'+size+'</td><td id="" class="hidden-xs">'+riqi+'</td><td><a href="#" class="btn btn-success btn-sm" onclick="showRename('+no+')">重命名</a> <a href="#" class="btn btn-info btn-sm">复制</a> <a href="#" class="btn btn-warning btn-sm">剪切</a> <a href="#"  onclick="delFolder(\''+name+'\')" class="btn btn-danger btn-sm">删除</a></td></tr>');
     }
 
     function drawTable(folderInfo, fileInfo){

@@ -12,20 +12,27 @@ $filename=$_REQUEST['filename'];
 $dirname=$_REQUEST['dirname'];
 
 $msg;
+
 if ($act=="delFolder") {
 	$msg = delFolder($path.'/'.$dirname);
 }elseif ($act=="delFile") {
 	$msg = delFile($path.'/'.$filename);
+}elseif($act=="renameFolder"){
+	$msg = renameFolder($path.'/'.$dirname,$path.'/'.$_REQUEST['newname']);
+}elseif($act=="renameFile"){
+	$msg = renameFile($path.'/'.$filename,$_REQUEST['newname']);
 }
+
 $info=readDirectory($path);
 
 $folderInfo = array();
-$fileInfo = array();
 for ($i=0; $i < count($info[dir]); $i++) { 
 	array_push($folderInfo, $info[dir][$i]);
 	array_push($folderInfo,transByte(dirSize($path.'/'.$info[dir][$i])));
 	array_push($folderInfo,date("Y-m-d H:i:s",filemtime($path.'/'.$info[dir][$i])));
 }
+
+$fileInfo = array();
 for ($i=0; $i < count($info[file]); $i++) { 
 	array_push($fileInfo, $info[file][$i]);
 	array_push($fileInfo,transByte(fileSize($path.'/'.$info[file][$i])));
