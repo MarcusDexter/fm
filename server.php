@@ -12,7 +12,7 @@ $act=$_REQUEST['act'];
 $filename=$_REQUEST['filename'];
 $dirname=$_REQUEST['dirname'];
 
-$msg;
+$msg = "";
 
 if ($act=="delFolder") {
 	$msg = delFolder($path.'/'.$dirname);
@@ -26,6 +26,9 @@ if ($act=="delFolder") {
 	$msg = createFolder($path.'/'.$dirname);
 }elseif($act=="createFile"){
 	$msg = createFile($path.'/'.$filename);
+}elseif($_FILES){
+	$upload=new upload('file0',$path);
+	$msg=$upload->uploadFile();
 }
 
 $info=readDirectory($path);

@@ -28,8 +28,6 @@
     <li><a href="index.html">...</a></li>
   </ol>
 
-  
-
   <!-- 表格显示文件信息 -->
   <div class="container-fluid">
     <div class="row-fluid">
@@ -52,15 +50,13 @@
 
               <!-- 上传文件 -->
               <div class="btn-group" id="uploadFile" style="display: none" role="group" aria-label="...">
-                <form class="form-inline" action="server.php" method="post" enctype="multipart/form-data">
+                <form class="form-inline" id="form">
                   <div class="form-group">
                     <div class="input-group">
-                      <input type="file" name="myFile" multiple="multiple" />
+                      <input type="file" name="myFile" id="myFile"  multiple="multiple"/>
                     </div>
                   </div>
-                  <a href="#" class="btn btn-default" onclick="upload()">test</a>
-                  <a href="#" class="btn btn-primary" onclick="uploadFiles()">确定</a>
-                  <input type="submit" class="btn btn-primary" name="act" value="上传" />
+                  <input type="submit" class="btn btn-primary" value="上传" />
                   <a href="#" class="btn btn-default" onclick="unshow('uploadFile')">取消</a>
                 </form>
               </div>
@@ -69,7 +65,6 @@
               <div class="btn-group" id="createFile" style="display: none" role="group" aria-label="...">
                 <form class="form-inline">
                   <div class="form-group">
-                    <label class="sr-only" for="exampleInputAmount">Amount (in dollars)</label>
                     <div class="input-group">
                       <div class="input-group-addon">文件名</div>
                       <input id="newFileName" type="text" class="form-control" placeholder="文件名" name="filename">
@@ -143,15 +138,17 @@
   
   <script>
     var path;
+
+
     
     function createFile(){
       $.ajax({ 
           type: "POST",  
-          url: "http://localhost/fm/server.php",
+          url: "server.php",
           data:{
             "act":"createFile",
             "path":path,
-            "filename":$("#newFileName").val(),
+            "filename":$("#newFileName").val()
           },
           success: function(data) {
             drawTable(data.tableInfo.folderInfo, data.tableInfo.fileInfo);
@@ -159,18 +156,18 @@
           },
           error: function(jqXHR){     
             alert("发生错误：" + jqXHR.status); 
-          },     
+          }
         });
     }
     
     function createFolder(){
       $.ajax({ 
           type: "POST",  
-          url: "http://localhost/fm/server.php",
+          url: "server.php",
           data:{
             "act":"createFolder",
             "path":path,
-            "dirname":$("#newFolderName").val(),
+            "dirname":$("#newFolderName").val()
           },
           success: function(data) {
             drawTable(data.tableInfo.folderInfo, data.tableInfo.fileInfo);
@@ -178,45 +175,45 @@
           },
           error: function(jqXHR){     
             alert("发生错误：" + jqXHR.status); 
-          },     
+          }
         });
     }
     
     function renameFile(oldname,id){
       $.ajax({ 
           type: "POST",  
-          url: "http://localhost/fm/server.php",
+          url: "server.php",
           data:{
             "act":"renameFile",
             "path":path,
             "filename":oldname,
-            "newname":$("#newname"+id).val(),
+            "newname":$("#newname"+id).val()
           },
           success: function(data) {
             drawTable(data.tableInfo.folderInfo, data.tableInfo.fileInfo);
           },
           error: function(jqXHR){     
             alert("发生错误：" + jqXHR.status); 
-          },     
+          }
         });
     }
     
     function renameFolder(oldname,id){
       $.ajax({ 
           type: "POST",  
-          url: "http://localhost/fm/server.php",
+          url: "server.php",
           data:{
             "act":"renameFolder",
             "path":path,
             "dirname":oldname,
-            "newname":$("#newname"+id).val(),
+            "newname":$("#newname"+id).val()
           },
           success: function(data) {
             drawTable(data.tableInfo.folderInfo, data.tableInfo.fileInfo);
           },
           error: function(jqXHR){     
             alert("发生错误：" + jqXHR.status); 
-          },     
+          }
         });
     }
     
@@ -224,18 +221,19 @@
       path=address;
       $.ajax({ 
         type: "GET",  
-        url: "http://localhost/fm/server.php",
+        url: "server.php",
         dataType: "json",
         data:{
-            "path":path,
+            "path":path
           },
         success: function(data) {
+          path=data.path;
           drawTable(data.tableInfo.folderInfo, data.tableInfo.fileInfo);
           drawPath(data.path);
         },
         error: function(jqXHR){     
           alert("发生错误：" + jqXHR.status); 
-        },     
+        }
       });
     }
     
@@ -255,18 +253,18 @@
       if(window.confirm("您确定要删除嘛?删除之后无法恢复哟!!!")){
         $.ajax({ 
           type: "POST",  
-          url: "http://localhost/fm/server.php",
+          url: "server.php",
           data:{
             "act":"delFile",
             "path":path,
-            "filename":filename,
+            "filename":filename
           },
           success: function(data) {
             drawTable(data.tableInfo.folderInfo, data.tableInfo.fileInfo);
           },
           error: function(jqXHR){     
             alert("发生错误：" + jqXHR.status); 
-          },     
+          }
         });
       }
     }
@@ -275,18 +273,18 @@
       if(window.confirm("您确定要删除嘛?删除之后无法恢复哟!!!")){
         $.ajax({ 
           type: "POST",  
-          url: "http://localhost/fm/server.php",
+          url: "server.php",
           data:{
             "act":"delFolder",
             "path":path,
-            "dirname":dirname,
+            "dirname":dirname
           },
           success: function(data) {
             drawTable(data.tableInfo.folderInfo, data.tableInfo.fileInfo);
           },
           error: function(jqXHR){     
             alert("发生错误：" + jqXHR.status); 
-          },     
+          }
         });
       }
     }
@@ -321,6 +319,7 @@
 
     function drawFolderTable(no ,name, size, riqi){
       $("#tab").append('<tr><td class="hidden-xs">'+no+'</td><td><img src="images/folder_ico.png" alt=""  title="文件" onclick="openFolder('+name+')"/></td><td id="td'+no+'"><a href="#" id="name'+no+'" onclick="openFolder('+name+')">'+name+'</a><form style="display:none" id="rename'+no+'"> <input type="text" id="newname'+no+'" placeholder="'+name+'"/> <a href="#" onclick="renameFolder(\''+name+'\',\''+no+'\')" class="btn btn-default btn-sm">确定</a> <a href="#" onclick="showRename('+no+')" class="btn btn-default btn-sm">取消</a> </form></td><td id="">'+size+'</td><td id="" class="hidden-xs">'+riqi+'</td><td><a href="#" class="btn btn-success btn-sm" onclick="showRename('+no+')">重命名</a> <a href="#" class="btn btn-info btn-sm">复制</a> <a href="#" class="btn btn-warning btn-sm">剪切</a> <a href="#"  onclick="delFolder(\''+name+'\')" class="btn btn-danger btn-sm">删除</a></td></tr>');
+      $("#tab").append('<tr><td class="hidden-xs">'+no+'</td><td><img src="images/folder_ico.png" alt=""  title="文件" onclick="openFolder(\''+name+'\')"/></td><td id="td'+no+'"><a href="#" id="name'+no+'" onclick="openFolder(\''+name+'\')">'+name+'</a><form style="display:none" id="rename'+no+'"> <input type="text" id="newname'+no+'" placeholder="'+name+'"/> <a href="#" onclick="renameFolder(\''+name+'\',\''+no+'\')" class="btn btn-default btn-sm">确定</a> <a href="#" onclick="showRename('+no+')" class="btn btn-default btn-sm">取消</a> </form></td><td id="">'+size+'</td><td id="" class="hidden-xs">'+riqi+'</td><td><a href="#" class="btn btn-success btn-sm" onclick="showRename('+no+')">重命名</a> <a href="#" class="btn btn-info btn-sm">复制</a> <a href="#" class="btn btn-warning btn-sm">剪切</a> <a href="#"  onclick="delFolder(\''+name+'\')" class="btn btn-danger btn-sm">删除</a></td></tr>');
     }
 
     function drawTable(folderInfo, fileInfo){
@@ -330,22 +329,19 @@
       for (var i = 0; i < folderInfo.length; i += 3) {
         drawFolderTable(no, folderInfo[i], folderInfo[i + 1], folderInfo[i + 2]);
         no++;
-      };
+      }
       if(fileInfo)
-      for (var i = 0; i < fileInfo.length; i += 3) {
+      for (i = 0; i < fileInfo.length; i += 3) {
         drawFileTable(no, fileInfo[i], fileInfo[i + 1], fileInfo[i + 2]);
         no++;
       }
     }
     
-    var path;
-    
     $(document).ready(function (){
       $.ajax({ 
         type: "GET",  
-        url: "http://localhost/fm/server.php",
+        url: "server.php",
         dataType: "json",
-        //jsonp: "callback",
         success: function(data) {
           path = data.path;
           drawTable(data.tableInfo.folderInfo, data.tableInfo.fileInfo);
@@ -353,7 +349,36 @@
         },
         error: function(jqXHR){     
           alert("发生错误：" + jqXHR.status); 
-        },     
+        }
+      });
+
+      //初始化上传
+      $('#form').submit(function () {
+        var formData = new FormData();
+        var fileObj = document.getElementById("myFile").files;
+        for (var i = 0; i < fileObj.length; i++)
+          formData.append("file" + i, fileObj[i]);
+        formData.append("path",path);
+        $.ajax({
+          type: 'POST',
+          url: 'server.php',
+          data: formData,
+          contentType: false,
+          processData: false,
+          success: function(data) {
+            path = data.path;
+            drawTable(data.tableInfo.folderInfo, data.tableInfo.fileInfo);
+            drawPath(data.path);
+          },
+          error: function(jqXHR){
+            alert("发生错误：" + jqXHR.status);
+          }
+        }).then(function () {
+
+        }, function () {
+          //failCal
+        });
+        return false;
       });
     })
   </script>
