@@ -137,10 +137,9 @@
   <script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.js"></script>
   
   <script>
-    var path;
-
-
+    var path="file";
     
+    // 新建文件
     function createFile(){
       $.ajax({ 
           type: "POST",  
@@ -160,6 +159,7 @@
         });
     }
     
+    // 新建文件夹
     function createFolder(){
       $.ajax({ 
           type: "POST",  
@@ -179,6 +179,7 @@
         });
     }
     
+    // 重命名文件
     function renameFile(oldname,id){
       $.ajax({ 
           type: "POST",  
@@ -198,6 +199,7 @@
         });
     }
     
+    // 重命名文件夹
     function renameFolder(oldname,id){
       $.ajax({ 
           type: "POST",  
@@ -217,6 +219,7 @@
         });
     }
     
+    // 绝对地址打开文件夹
     function openRealFolder(address){
       path=address;
       $.ajax({ 
@@ -227,9 +230,8 @@
             "path":path
           },
         success: function(data) {
-          path=data.path;
           drawTable(data.tableInfo.folderInfo, data.tableInfo.fileInfo);
-          drawPath(data.path);
+          drawPath(path);
         },
         error: function(jqXHR){     
           alert("发生错误：" + jqXHR.status); 
@@ -237,18 +239,22 @@
       });
     }
     
+    // 相对地址打开文件夹
     function openFolder(dirname){
       openRealFolder(path+'/'+dirname);
     }
     
+    // 取消隐藏
     function show(dis){
       document.getElementById(dis).style.display="block";
     }
     
+    // 隐藏
     function unshow(dis){
       document.getElementById(dis).style.display="none";
     }
     
+    // 删除文件
     function delFile(filename){
       if(window.confirm("您确定要删除嘛?删除之后无法恢复哟!!!")){
         $.ajax({ 
@@ -269,6 +275,7 @@
       }
     }
     
+    // 删除文件夹
     function delFolder(dirname){
       if(window.confirm("您确定要删除嘛?删除之后无法恢复哟!!!")){
         $.ajax({ 
@@ -289,6 +296,7 @@
       }
     }
     
+    // 绘制地址
     function drawPath(path){
       $("#path").empty();
       var paths=path.split("/");
@@ -301,6 +309,7 @@
       $("#path").append('<li class="active">'+paths[i]+'</li> ');
     }
 
+    // 显示重命名表单
     function showRename(id){
       var nameid="#name"+id;
       var renameid="#rename"+id;
@@ -313,14 +322,17 @@
       }
     }
 
+    // 绘制文件表格
     function drawFileTable(no, name, size, riqi){
       $("#tab").append('<tr><td class="hidden-xs">'+no+'</td><td><img src="images/file_ico.png" alt=""  title="文件夹"/></td><td id="td'+no+'"><a href="#" id="name'+no+'">'+name+'</a><form style="display:none" id="rename'+no+'"> <input type="text" name="newname" id="newname'+no+'" placeholder="'+name+'"/> <a href="#" onclick="renameFile(\''+name+'\',\''+no+'\')" class="btn btn-default btn-sm">确定</a> <a href="#" onclick="showRename('+no+')" class="btn btn-default btn-sm">取消</a> </form></td><td id="">'+size+'</td><td id="" class="hidden-xs">'+riqi+'</td><td><a href="#" class="btn btn-success btn-sm" onclick="showRename('+no+')">重命名</a> <a href="#" class="btn btn-info btn-sm">复制</a> <a href="#" class="btn btn-warning btn-sm">剪切</a> <a href="#"  onclick="delFile(\''+name+'\')" class="btn btn-danger btn-sm">删除</a> <a href="#" class="btn btn-primary btn-sm">下载</a></td></tr>');
     }
 
+    // 绘制文件夹表格
     function drawFolderTable(no ,name, size, riqi){
       $("#tab").append('<tr><td class="hidden-xs">'+no+'</td><td><img src="images/folder_ico.png" alt=""  title="文件" onclick="openFolder(\''+name+'\')"/></td><td id="td'+no+'"><a href="#" id="name'+no+'" onclick="openFolder(\''+name+'\')">'+name+'</a><form style="display:none" id="rename'+no+'"> <input type="text" id="newname'+no+'" placeholder="'+name+'"/> <a href="#" onclick="renameFolder(\''+name+'\',\''+no+'\')" class="btn btn-default btn-sm">确定</a> <a href="#" onclick="showRename('+no+')" class="btn btn-default btn-sm">取消</a> </form></td><td id="">'+size+'</td><td id="" class="hidden-xs">'+riqi+'</td><td><a href="#" class="btn btn-success btn-sm" onclick="showRename('+no+')">重命名</a> <a href="#" class="btn btn-info btn-sm">复制</a> <a href="#" class="btn btn-warning btn-sm">剪切</a> <a href="#"  onclick="delFolder(\''+name+'\')" class="btn btn-danger btn-sm">删除</a></td></tr>');
     }
 
+    // 绘制表格
     function drawTable(folderInfo, fileInfo){
       $("#tab").empty();
       var no = 1;
@@ -336,15 +348,15 @@
       }
     }
     
+    // 初始化
     $(document).ready(function (){
       $.ajax({ 
         type: "GET",  
         url: "server.php",
         dataType: "json",
         success: function(data) {
-          path = data.path;
           drawTable(data.tableInfo.folderInfo, data.tableInfo.fileInfo);
-          drawPath(data.path);
+          drawPath(path);
         },
         error: function(jqXHR){     
           alert("发生错误：" + jqXHR.status); 
@@ -365,9 +377,8 @@
           contentType: false,
           processData: false,
           success: function(data) {
-            path = data.path;
             drawTable(data.tableInfo.folderInfo, data.tableInfo.fileInfo);
-            drawPath(data.path);
+            drawPath(path);
           },
           error: function(jqXHR){
             alert("发生错误：" + jqXHR.status);
@@ -375,7 +386,7 @@
         }).then(function () {
 
         }, function () {
-          //failCal
+          
         });
         return false;
       });
