@@ -48,6 +48,8 @@
                 </ul>
               </div>
 
+              <button type="button" class="btn btn-primary" onclick="" style="float:right">粘贴</button>
+
               <!-- 上传文件 -->
               <div class="btn-group" id="uploadFile" style="display: none" role="group" aria-label="...">
                 <form class="form-inline" id="form">
@@ -106,7 +108,7 @@
               
             </tbody>
           </table>
-          
+          <div class="alert alert-warning" role="alert" id="nullfolder" style="display: none">该文件夹为空</div>
           <div class="panel-footer">
             <!-- 翻页按钮 -->
             <nav>
@@ -329,7 +331,7 @@
 
     // 绘制文件夹表格
     function drawFolderTable(no ,name, size, riqi){
-      $("#tab").append('<tr><td class="hidden-xs">'+no+'</td><td><img src="images/folder_ico.png" alt=""  title="文件" onclick="openFolder(\''+name+'\')"/></td><td id="td'+no+'"><a href="#" id="name'+no+'" onclick="openFolder(\''+name+'\')">'+name+'</a><form style="display:none" id="rename'+no+'"> <input type="text" id="newname'+no+'" placeholder="'+name+'"/> <a href="#" onclick="renameFolder(\''+name+'\',\''+no+'\')" class="btn btn-default btn-sm">确定</a> <a href="#" onclick="showRename('+no+')" class="btn btn-default btn-sm">取消</a> </form></td><td id="">'+size+'</td><td id="" class="hidden-xs">'+riqi+'</td><td><a href="#" class="btn btn-success btn-sm" onclick="showRename('+no+')">重命名</a> <a href="#" class="btn btn-info btn-sm">复制</a> <a href="#" class="btn btn-warning btn-sm">剪切</a> <a href="#"  onclick="delFolder(\''+name+'\')" class="btn btn-danger btn-sm">删除</a></td></tr>');
+      $("#tab").append('<tr><td class="hidden-xs">'+no+'</td><td><img src="images/folder_ico.png" alt=""  title="文件" onclick="openFolder(\''+name+'\')"/></td><td id="td'+no+'"><a href="#" id="name'+no+'" onclick="openFolder(\''+name+'\')">'+name+'</a><form style="display:none" id="rename'+no+'"> <input type="text" id="newname'+no+'" placeholder="'+name+'"/> <a href="#" onclick="renameFolder(\''+name+'\',\''+no+'\')" class="btn btn-default btn-sm">确定</a> <a href="#" onclick="showRename('+no+')" class="btn btn-default btn-sm">取消</a> </form></td><td id="">'+size+'</td><td id="" class="hidden-xs">'+riqi+'</td><td><a href="#" class="btn btn-success btn-sm" onclick="showRename('+no+')">重命名</a> <a href="#" class="btn btn-info btn-sm">复制</a> <a href="#" class="btn btn-warning btn-sm">剪切</a> <a href="#"  onclick="delFolder(\''+name+'\')" class="btn btn-danger btn-sm">删除</a> <a href="#" class="btn btn-primary btn-sm">粘贴</a></td></tr>');
     }
 
     // 绘制表格
@@ -345,6 +347,11 @@
       for (i = 0; i < fileInfo.length; i += 3) {
         drawFileTable(no, fileInfo[i], fileInfo[i + 1], fileInfo[i + 2]);
         no++;
+      }
+      if (no == 1) {
+        show('nullfolder');
+      }else{
+        unshow('nullfolder');
       }
     }
     
