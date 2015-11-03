@@ -7,13 +7,13 @@ require_once 'common.func.php';
 require_once 'upload.class.php';
 
 // 获取路径
-$path=$_REQUEST['path']?$_REQUEST['path']:"file";
+$path=isset($_REQUEST['path'])?$_REQUEST['path']:"file";
 // 获取操作
-$act=$_REQUEST['act'];
+$act=isset($_REQUEST['act'])?$_REQUEST['act']:NULL;
 // 获取文件名
-$filename=$_REQUEST['filename'];
+$filename=isset($_REQUEST['filename'])?$_REQUEST['filename']:NULL;
 // 获取文件夹名
-$dirname=$_REQUEST['dirname'];
+$dirname=isset($_REQUEST['dirname'])?$_REQUEST['dirname']:NULL;
 
 $msg = "";
 
@@ -41,18 +41,18 @@ $info=readDirectory($path);
 
 // 文件夹信息格式化并用数组保存
 $folderInfo = array();
-for ($i=0; $i < count($info[dir]); $i++) { 
-	array_push($folderInfo, $info[dir][$i]);
-	array_push($folderInfo,transByte(dirSize($path.'/'.$info[dir][$i])));
-	array_push($folderInfo,date("Y-m-d H:i:s",filemtime($path.'/'.$info[dir][$i])));
+for ($i=0; $i < count($info['dir']); $i++) { 
+	array_push($folderInfo, $info['dir'][$i]);
+	array_push($folderInfo,transByte(dirSize($path.'/'.$info['dir'][$i])));
+	array_push($folderInfo,date("Y-m-d H:i:s",filemtime($path.'/'.$info['dir'][$i])));
 }
 
 // 文件信息格式化并用数组保存
 $fileInfo = array();
-for ($i=0; $i < count($info[file]); $i++) { 
-	array_push($fileInfo, $info[file][$i]);
-	array_push($fileInfo,transByte(fileSize($path.'/'.$info[file][$i])));
-	array_push($fileInfo,date("Y-m-d H:i:s",filemtime($path.'/'.$info[file][$i])));
+for ($i=0; $i < count($info['file']); $i++) { 
+	array_push($fileInfo, $info['file'][$i]);
+	array_push($fileInfo,transByte(fileSize($path.'/'.$info['file'][$i])));
+	array_push($fileInfo,date("Y-m-d H:i:s",filemtime($path.'/'.$info['file'][$i])));
 }
 
 // 数组打包
