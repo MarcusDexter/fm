@@ -6,8 +6,10 @@ require_once 'file.func.php';
 require_once 'common.func.php';
 require_once 'upload.class.php';
 
+define("ROOT_PATH","..");
+
 // 获取路径
-$path=isset($_REQUEST['path'])?$_REQUEST['path']:"file";
+$path=isset($_REQUEST['path'])?$_REQUEST['path']:ROOT_PATH;
 // 获取操作
 $act=isset($_REQUEST['act'])?$_REQUEST['act']:NULL;
 // 获取文件名
@@ -41,11 +43,18 @@ $info=readDirectory($path);
 
 // 文件夹信息格式化并用数组保存
 $folderInfo = array();
-if(isset($info['dir']))
-for ($i=0; $i < count($info['dir']); $i++) { 
-	array_push($folderInfo, $info['dir'][$i]);
-	array_push($folderInfo,transByte(dirSize($path.'/'.$info['dir'][$i])));
-	array_push($folderInfo,date("Y-m-d H:i:s",filemtime($path.'/'.$info['dir'][$i])));
+$i=0;
+if($path!=ROOT_PATH){
+	array_push($folderInfo, ROOT_PATH);
+	array_push($folderInfo,0);
+	array_push($folderInfo,'1970-01-01 00:00:00');
+}
+if(isset($info['dir'])){
+	for (; $i < count($info['dir']); $i++) {
+		array_push($folderInfo, $info['dir'][$i]);
+		array_push($folderInfo, transByte(dirSize($path . '/' . $info['dir'][$i])));
+		array_push($folderInfo, date("Y-m-d H:i:s", filemtime($path . '/' . $info['dir'][$i])));
+	}
 }
 
 // 文件信息格式化并用数组保存
