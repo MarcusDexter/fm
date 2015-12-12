@@ -223,15 +223,16 @@
     
     // 绝对地址打开文件夹
     function openRealFolder(address){
-      path=address;
+      tmpPath=address;
       $.ajax({ 
         type: "GET",  
         url: "server.php",
         dataType: "json",
         data:{
-            "path":path
+            "path":tmpPath
           },
         success: function(data) {
+          path=tmpPath;
           drawTable(data.tableInfo.folderInfo, data.tableInfo.fileInfo);
           drawPath(path);
         },
