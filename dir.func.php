@@ -7,6 +7,7 @@
  */
 function readDirectory($path) {
 	$handle = opendir ( $path );
+	$arr=array();
 	while ( ($item = readdir ( $handle )) !== false ) {
 		//.和..这2个特殊目录
 		if ($item != "." && $item != "..") {
@@ -16,7 +17,6 @@ function readDirectory($path) {
 			if (is_dir ( $path . "/" . $item )) {
 				$arr ['dir'] [] = $item;
 			}
-		
 		}
 	}
 	closedir ( $handle );

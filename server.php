@@ -41,6 +41,7 @@ $info=readDirectory($path);
 
 // 文件夹信息格式化并用数组保存
 $folderInfo = array();
+if(isset($info['dir']))
 for ($i=0; $i < count($info['dir']); $i++) { 
 	array_push($folderInfo, $info['dir'][$i]);
 	array_push($folderInfo,transByte(dirSize($path.'/'.$info['dir'][$i])));
@@ -49,6 +50,7 @@ for ($i=0; $i < count($info['dir']); $i++) {
 
 // 文件信息格式化并用数组保存
 $fileInfo = array();
+if(isset($info['file']))
 for ($i=0; $i < count($info['file']); $i++) { 
 	array_push($fileInfo, $info['file'][$i]);
 	array_push($fileInfo,transByte(fileSize($path.'/'.$info['file'][$i])));
